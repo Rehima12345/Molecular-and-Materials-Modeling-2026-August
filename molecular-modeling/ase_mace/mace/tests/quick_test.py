@@ -8,7 +8,7 @@ model = Path.home() / '.cache' / 'mace' / 'macempa0mediummodel'
 calc = MACECalculator(model_path=str(model), device='cpu')
 
 print("MACE Quick Test\n" + "="*40)
-for mol in ['H2O', 'CH4', 'NH3', 'CO2', 'C6H6']:
+for mol in ['H2O', 'CH4', 'NH3', 'CO2', 'C6H6', 'N2']:
     atoms = molecule(mol)
     atoms.calc = calc
     start = time.time()

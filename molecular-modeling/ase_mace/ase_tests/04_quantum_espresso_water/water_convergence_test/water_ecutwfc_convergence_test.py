@@ -43,7 +43,7 @@ base_input_data = {
     },
     'system': {
         'ecutwfc': 46.0,  # Will be varied
-        'ecutrho': 200.0,  # Will be set based on ecutwfc
+        # ecutrho is NOT set - QE will use default (4 * ecutwfc)
         'ibrav': 0,
         'nosym': True,
         'noinv': True,
@@ -63,9 +63,9 @@ command = 'mpirun -np 4 pw.x'
 profile = EspressoProfile(command, pseudo_dir=PSEUDO_DIR)
 
 
-def run_single_point(atoms, ecutwfc, ecutrho=None):
+def run_single_point(atoms, ecutwfc):
     """
-    Run a single point (static) calculation with given cutoffs
+    Run a single point (static) calculation with given cutoff
     
     Parameters:
     -----------
@@ -73,8 +73,6 @@ def run_single_point(atoms, ecutwfc, ecutrho=None):
         The atoms to calculate (geometry is fixed)
     ecutwfc : float
         Wavefunction cutoff in Ry
-    ecutrho : float or None
-        Charge density cutoff in Ry. If None, uses 4 * ecutwfc
     
     Returns:
     --------
@@ -84,14 +82,10 @@ def run_single_point(atoms, ecutwfc, ecutrho=None):
     # Create a copy of the atoms
     atoms_copy = atoms.copy()
     
-    # Set the cutoffs
-    if ecutrho is None:
-        ecutrho = 4.0 * ecutwfc
-    
-    # Create input data with current cutoffs
+    # Create input data with current cutoff
     input_data = base_input_data.copy()
     input_data['system']['ecutwfc'] = ecutwfc
-    input_data['system']['ecutrho'] = ecutrho
+    # ecutrho is NOT set - QE will use default
     
     # Create calculator
     calc = Espresso(profile=profile,
@@ -110,7 +104,7 @@ def run_single_point(atoms, ecutwfc, ecutrho=None):
         return None
 
 
-def convergence_test_ecutwfc(atoms, cutoff_range, ecutrho_factor=4.0):
+def convergence_test_ecutwfc(atoms, cutoff_range):
     """
     Test convergence with respect to ecutwfc using static calculations
     
@@ -120,8 +114,6 @@ def convergence_test_ecutwfc(atoms, cutoff_range, ecutrho_factor=4.0):
         The atoms to test (fixed geometry)
     cutoff_range : list or array
         List of ecutwfc values to test
-    ecutrho_factor : float
-        Multiplier for ecutrho (ecutrho = ecutrho_factor * ecutwfc)
     
     Returns:
     --------
@@ -130,7 +122,7 @@ def convergence_test_ecutwfc(atoms, cutoff_range, ecutrho_factor=4.0):
     """
     print("\n" + "="*70)
     print(f"CONVERGENCE TEST: ecutwfc variation (Static calculations)")
-    print(f"ecutrho = {ecutrho_factor} * ecutwfc")
+    print(f"ecutrho = default (4 * ecutwfc)")
     print(f"Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("="*70)
     print(f"{'ecutwfc (Ry)':>12} | {'ecutrho (Ry)':>12} | {'Energy (eV)':>15} | ΔE (meV)")
@@ -140,10 +132,10 @@ def convergence_test_ecutwfc(atoms, cutoff_range, ecutrho_factor=4.0):
     successful_cutoffs = []
     
     for ecut in cutoff_range:
-        ecutrho = ecutrho_factor * ecut
+        ecutrho = 4.0 * ecut  # QE default
         
         # Run single point calculation
-        energy = run_single_point(atoms, ecut, ecutrho)
+        energy = run_single_point(atoms, ecut)
         
         if energy is not None:
             energies.append(energy)
@@ -254,7 +246,7 @@ def print_summary(ecut_results):
     print("✅ RECOMMENDED CUTOFFS:")
     print("-"*50)
     print(f"  ecutwfc = {recommended_ecut:.0f} Ry")
-    print(f"  ecutrho = {4.0 * recommended_ecut:.0f} Ry (using 4x rule)")
+    print(f"  ecutrho = {4.0 * recommended_ecut:.0f} Ry (QE default)")
     print("="*70)
     
     return recommended_ecut
@@ -270,6 +262,7 @@ if __name__ == "__main__":
     print("WATER MOLECULE CONVERGENCE TEST")
     print("Testing convergence with respect to ecutwfc")
     print("Using STATIC (single point) calculations at fixed geometry")
+    print("ecutrho = default (4 * ecutwfc) - NOT set explicitly")
     print("="*70)
     
     # Print initial geometry
@@ -300,7 +293,7 @@ if __name__ == "__main__":
     print("\nStarting calculations...\n")
     
     # Run the convergence test with static calculations
-    ecut_results = convergence_test_ecutwfc(h2o, ecut_range, ecutrho_factor=4.0)
+    ecut_results = convergence_test_ecutwfc(h2o, ecut_range)
     
     # =========================================================================
     # Plot and summarize results
@@ -315,4 +308,4 @@ if __name__ == "__main__":
     
     print("\n✨ Convergence test completed successfully!")
     print(f"Recommended ecutwfc = {recommended_ecut} Ry")
-    print(f"Recommended ecutrho = {4.0 * recommended_ecut:.1f} Ry")
+    print(f"Recommended ecutrho = {4.0 * recommended_ecut:.1f} Ry (QE default)")

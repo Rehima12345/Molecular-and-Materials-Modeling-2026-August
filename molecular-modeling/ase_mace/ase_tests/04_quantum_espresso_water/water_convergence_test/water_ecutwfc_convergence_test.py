@@ -43,7 +43,7 @@ base_input_data = {
     },
     'system': {
         'ecutwfc': 46.0,  # Will be varied
-        # ecutrho is NOT set - QE will use default (4 * ecutwfc)
+        # ecutrho is NOT set - QE will use value from pseudopotential
         'ibrav': 0,
         'nosym': True,
         'noinv': True,
@@ -85,7 +85,7 @@ def run_single_point(atoms, ecutwfc):
     # Create input data with current cutoff
     input_data = base_input_data.copy()
     input_data['system']['ecutwfc'] = ecutwfc
-    # ecutrho is NOT set - QE will use default
+    # ecutrho is NOT set - QE will use value from pseudopotential
     
     # Create calculator
     calc = Espresso(profile=profile,
@@ -122,18 +122,16 @@ def convergence_test_ecutwfc(atoms, cutoff_range):
     """
     print("\n" + "="*70)
     print(f"CONVERGENCE TEST: ecutwfc variation (Static calculations)")
-    print(f"ecutrho = default (4 * ecutwfc)")
+    print(f"ecutrho determined automatically by QE from pseudopotential")
     print(f"Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("="*70)
-    print(f"{'ecutwfc (Ry)':>12} | {'ecutrho (Ry)':>12} | {'Energy (eV)':>15} | ΔE (meV)")
+    print(f"{'ecutwfc (Ry)':>12} | {'Energy (eV)':>15} | ΔE (meV)")
     print("-"*70)
     
     energies = []
     successful_cutoffs = []
     
     for ecut in cutoff_range:
-        ecutrho = 4.0 * ecut  # QE default
-        
         # Run single point calculation
         energy = run_single_point(atoms, ecut)
         
@@ -144,11 +142,11 @@ def convergence_test_ecutwfc(atoms, cutoff_range):
             # Calculate energy difference from previous
             if len(energies) > 1:
                 delta_e = (energy - energies[-2]) * 1000  # Convert to meV
-                print(f"{ecut:12.1f} | {ecutrho:12.1f} | {energy:15.6f} | {delta_e:8.3f} meV")
+                print(f"{ecut:12.1f} | {energy:15.6f} | {delta_e:8.3f} meV")
             else:
-                print(f"{ecut:12.1f} | {ecutrho:12.1f} | {energy:15.6f} | {'--':>8}")
+                print(f"{ecut:12.1f} | {energy:15.6f} | {'--':>8}")
         else:
-            print(f"{ecut:12.1f} | {ecutrho:12.1f} | {'FAILED':>15} | {'--':>8}")
+            print(f"{ecut:12.1f} | {'FAILED':>15} | {'--':>8}")
     
     print("="*70)
     
@@ -246,7 +244,7 @@ def print_summary(ecut_results):
     print("✅ RECOMMENDED CUTOFFS:")
     print("-"*50)
     print(f"  ecutwfc = {recommended_ecut:.0f} Ry")
-    print(f"  ecutrho = {4.0 * recommended_ecut:.0f} Ry (QE default)")
+    print(f"  ecutrho = NOT SET (QE determines automatically from pseudopotential)")
     print("="*70)
     
     return recommended_ecut
@@ -262,7 +260,7 @@ if __name__ == "__main__":
     print("WATER MOLECULE CONVERGENCE TEST")
     print("Testing convergence with respect to ecutwfc")
     print("Using STATIC (single point) calculations at fixed geometry")
-    print("ecutrho = default (4 * ecutwfc) - NOT set explicitly")
+    print("ecutrho determined automatically by QE from pseudopotential")
     print("="*70)
     
     # Print initial geometry
@@ -308,4 +306,4 @@ if __name__ == "__main__":
     
     print("\n✨ Convergence test completed successfully!")
     print(f"Recommended ecutwfc = {recommended_ecut} Ry")
-    print(f"Recommended ecutrho = {4.0 * recommended_ecut:.1f} Ry (QE default)")
+    print(f"ecutrho will be determined automatically by QE")

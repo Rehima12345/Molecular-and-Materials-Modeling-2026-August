@@ -44,6 +44,6 @@ TASK 2.3
 Within Cell relaxation (QE and ASE), shift the atoms manually and run the convergence again
 
 
-TASK 2.4
----------
+Challenge
+~~~~~~~~
  Find different pseudopotentials from http://pseudopotentials.quantum-espresso.org/legacy_tables or other resources. Update the convergence Test (ASE) python code, and run the convergence test for each. Make a table of energy and k point cut offs of various pseudopotentials using Si as an example.

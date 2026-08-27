@@ -31,4 +31,4 @@ For the exact orbital orderings for different cases (e.g. spin-orbit, spin polar
 
 Challenge
 ~~~~~~~~
-Repeat the DOS calculations using a series of K-Point grids lower than teh converged one, eg 12x12x1, 18x18x1 and compare the electronic structre at gamma point for each calculations  
+Repeat the DOS calculations using a series of K-Point grids lower than the converged one, eg 12x12x1, 18x18x1 and compare the electronic structre at gamma point for each calculations  

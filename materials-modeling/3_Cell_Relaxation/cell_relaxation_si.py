@@ -68,7 +68,7 @@ qe_bin = "/home/milias/work/software/qe/qe-7.5/bin"
 # Job commands
 #pw_command = f'{qe_bin}/bin/pw.x'
 #pw_command = f'mpirun -np 4 {qe_bin}/bin/pw.x'
-pw_command = f'mpirun -np 4 {qe_bin}/pw.x'
+pw_command = f'mpirun -np 8 {qe_bin}/pw.x'
 #pw_command = f'mpirun -np 4 pw.x'
 
 pw_profile = EspressoProfile(

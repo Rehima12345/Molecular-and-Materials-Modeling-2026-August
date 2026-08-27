@@ -2,7 +2,8 @@
 Hg@C18
 ======
 
-(mace_env) miroi@MIRO:~/work/projects/mol_mat_modeling_schools/Molecular-and-Materials-Modeling-2026-August/materials-modeling/8_Adsorption/Hg_on_C18/.python relaxation_Hg_C18.py
+python relaxation_Hg_C18.py
+
 Successfully read 19 atoms from c18_hg.vasp
 
 Starting atom relaxation by ASE
@@ -19,7 +20,7 @@ Relaxation complete
 
 C18 slab
 --------
-(mace_env) miroi@MIRO:~/work/projects/mol_mat_modeling_schools/Molecular-and-Materials-Modeling-2026-August/materials-modeling/8_Adsorption/Hg_on_C18/.python energy_c18.py
+python energy_c18.py
 Successfully read 18 atoms from c18.vasp
 
 Running SCF calculation...
@@ -39,9 +40,9 @@ Running SCF calculation...
 Adsorption energy = E(Hg@C18)-E(C18)-H(Hg)=-7481.346431-(-2947.320598)-(-4533.787985)=-.237848 = -0.24 eV
 
 GoogleAI:
-Calculated (DFT with vdW corrections): \(-0.15\text{ eV}\) to \(-0.22\text{ eV}\) (approx. \(-14.5\) to \(-21.2\text{ kJ/mol}\)).
-Experimental (Highly Oriented Pyrolytic Graphite / Graphene): \(-0.18\text{ eV}\) to \(-0.25\text{ eV}\).
+Calculated (DFT with vdW corrections): -0.15 eV to -0.22 eV .
+Experimental (Highly Oriented Pyrolytic Graphite / Graphene): -0.18  eV to -0.25 eV .
 
 Challenge
-=========
-Calculate adsorption energy on 3 different adsorption sites: on-top, on-bridge, on-hollow.
+---------
+Calculate the adsorption energy of Hg on 3 different adsorption sites of the C18 slab: on-top, on-bridge, on-hollow.

@@ -32,5 +32,4 @@ Modify the Python script to perform the relaxation of the C8 slab and calculate 
 
 Likewise, increase the ecutwfc parameter to see if this improves the binding energy of H on C8.
 
-Note: if you would enlarge the slab (increasing the number of graphene C atoms), 
-it would become computationally very demanding, thus not suitable for running on your personal computer.
+Enlarge the slab (increasing the number of graphene C atoms) to C18 as for the Hg atom adsorption, and compute the adsorption energy. 

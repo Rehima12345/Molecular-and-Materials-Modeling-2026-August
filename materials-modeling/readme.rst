@@ -6,6 +6,8 @@ Materials Modeling
 
 **/home/milias/work/software/qe/qe-7.5/bin**
 
+**My working directory : /work/projects/schools/Molecular-and-Materials-Modeling-2026-August/materials-modeling/**
+
 **Working with git:  git clone, git add -A, git commit -a, git push, git pull**
 
 ~~~~~~~~~~~~
@@ -15,7 +17,7 @@ Requirements:
 
 	$ /path/to/qe/bin/pw.x
 
-	Program PWSCF v.7.4.1 starts on 15Jul2025 at  9:33:25
+	Program PWSCF v.7.5 starts on 27Aug2026 at 10:13: 2
  
 (2) Python (python3-full).
 
@@ -28,7 +30,7 @@ Requirements:
 
 	$ ase --version
 
-	ase-3.26.0b1
+	ase-3.28.0b1
 
 ~~~~~~~~~~~~
 Structure and potentials:

@@ -8,7 +8,7 @@ Exercise
 Step 1
 ~~~~~~
 Run the SCF Calculation directly in QE
-/path/to/qe/bin/pw.x < Si.in > Si.out
+mpirun -np 4 /home/milias/work/software/qe/qe-7.5/bin/pw.x < Si.in > Si.out
 (if using a parallel version, invoke it by mpirun -np N /path/to/qe/bin/pw.x < Si.in > Si.out)
 
 Verify if the calculation converged successfully:a

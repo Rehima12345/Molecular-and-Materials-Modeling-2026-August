@@ -34,4 +34,4 @@ Note2: ASE automatically saves the complete relaxation history in the trajectory
 
 Challenge
 ---------
-Modify the TASK 3: For cell relaxation (QE and ASE), use a custom, tighter etot_conv_thr and forc_conv_thr, shift the atoms manually and run the convergence again. try the same in ASE.
+Modify parameters of the TASK 3: For the cell relaxation (both QE and ASE-QE), use a custom, tighter values of etot_conv_thr and forc_conv_thr, shift the atoms manually and run the convergence again. Try the same in ASE-driven QE run.

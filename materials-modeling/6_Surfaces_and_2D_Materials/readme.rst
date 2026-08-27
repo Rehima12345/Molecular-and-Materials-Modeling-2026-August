@@ -27,3 +27,8 @@ Finally examine the calculated projected DOS for a carbon atom's p orbitals.
 This file contains five columns where the first two were already covered in TASK 4; columns 3-5 describes the orbital projections onto pz, px, and py orbitals (in that specific order. 
 
 For the exact orbital orderings for different cases (e.g. spin-orbit, spin polarized etc.), consult the PROJWFC manual. Plot the contributions from pz, px, and py. The expected nature for graphene is that near the Fermi level, the electronic states are formed primarily by the out-of-plane pz orbitals, which create the characteristic Dirac cones. Determine if your results show this same behavior. Now plot the same for Si p orbital, what differences do you see? Why?
+
+
+Challenge
+~~~~~~~~
+Repeat the DOS calculations using a series of K-Point grids lower than teh converged one, eg 12x12x1, 18x18x1 and compare the electronic structre at gamma point for each calculations  

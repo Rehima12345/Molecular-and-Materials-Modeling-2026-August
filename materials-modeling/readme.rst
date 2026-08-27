@@ -30,7 +30,7 @@ Requirements:
 
 	$ ase --version
 
-	ase-3.26.0b1
+	ase-3.28.0b1
 
 ~~~~~~~~~~~~
 Structure and potentials:

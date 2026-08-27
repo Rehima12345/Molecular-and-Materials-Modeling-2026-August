@@ -6,6 +6,8 @@ Materials Modeling
 
 **/home/milias/work/software/qe/qe-7.5/bin**
 
+**My working directory : /work/projects/schools/Molecular-and-Materials-Modeling-2026-August/materials-modeling/**
+
 **Working with git:  git clone, git add -A, git commit -a, git push, git pull**
 
 ~~~~~~~~~~~~

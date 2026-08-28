@@ -2,6 +2,8 @@
 Materials Modeling
 ~~~~~~~~~~~~
 
+**For next school: update work function script to grab vacuum level in Ry, convert to eV and print in stdout**
+
 **source ~/work/software/venv/bin/activate**
 
 **/home/milias/work/software/qe/qe-7.5/bin**

@@ -1,0 +1,50 @@
+&CONTROL
+   calculation      = 'scf'
+   verbosity        = 'low'
+   restart_mode     = 'from_scratch'
+   tstress          = .true.
+   tprnfor          = .true.
+   outdir           = '/home/rehim/Desktop/Molecular-and-Materials-Modeling-2026-August/molecular-modeling/conda_environment/software_checks/basic_functionality_checks/qe/tmp/'
+   prefix           = 'si_test'
+   pseudo_dir       = '/home/rehim/Desktop/Molecular-and-Materials-Modeling-2026-August/molecular-modeling/conda_environment/software_checks/basic_functionality_checks/qe'
+/
+&SYSTEM
+   nbnd             = 8
+   ecutwfc          = 20.0
+   ecutrho          = 80.0
+   occupations      = 'smearing'
+   degauss          = 0.02
+   smearing         = 'gaussian'
+   ntyp             = 1
+   nat              = 2
+   ibrav            = 0
+/
+&ELECTRONS
+   electron_maxstep = 50
+   conv_thr         = 1e-06
+   mixing_beta      = 0.7
+   diagonalization  = 'david'
+/
+&IONS
+/
+&CELL
+/
+&FCP
+/
+&RISM
+/
+ATOMIC_SPECIES
+Si 28.085 Si.upf
+
+K_POINTS automatic
+4 4 4  0 0 0
+
+CELL_PARAMETERS angstrom
+0.00000000000000 2.71500000000000 2.71500000000000
+2.71500000000000 0.00000000000000 2.71500000000000
+2.71500000000000 2.71500000000000 0.00000000000000
+
+ATOMIC_POSITIONS angstrom
+Si 0.0000000000 0.0000000000 0.0000000000  
+Si 1.3575000000 1.3575000000 1.3575000000  
+

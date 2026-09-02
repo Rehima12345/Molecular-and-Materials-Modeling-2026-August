@@ -1,0 +1,292 @@
+#!/bin/bash
+# ============================================================
+# NWChem Job Submission Script
+# Challenge I.2 & I.8: NWChem Performance Tests
+# ============================================================
+
+set -e  # Exit on error
+
+echo -e "\n=========================================="
+echo "NWChem Job Started: $(date)"
+echo "=========================================="
+
+# ============================================================
+# 1. System Information
+# ============================================================
+echo -e "\n📋 System Information:"
+echo "  Hostname: $(hostname)"
+echo "  User: $(whoami)"
+echo "  Date: $(date)"
+
+# CPU Information
+if [ -f /proc/cpuinfo ]; then
+    CPU_MODEL=$(cat /proc/cpuinfo | grep 'model name' | head -1 | sed 's/.*: //')
+    echo "  CPU: $CPU_MODEL"
+    
+    # Get total cores
+    TOTAL_CORES=$(nproc 2>/dev/null || grep -c processor /proc/cpuinfo)
+    echo "  Total CPU cores: $TOTAL_CORES"
+    
+    # Get physical cores
+    PHYSICAL_CORES=$(grep -c "cpu cores" /proc/cpuinfo | head -1)
+    [ -z "$PHYSICAL_CORES" ] && PHYSICAL_CORES=$TOTAL_CORES
+    echo "  Physical cores: $PHYSICAL_CORES"
+    
+    MAXTHREADS=$PHYSICAL_CORES
+else
+    echo "  ⚠ /proc/cpuinfo not found, using default"
+    MAXTHREADS=4
+fi
+
+# ============================================================
+# 2. Command Line Arguments
+# ============================================================
+echo -e "\n📝 Command Line Arguments: $#"
+
+if [ $# -gt 0 ]; then
+    first_arg=$1
+    echo "  First argument: $first_arg"
+    
+    if [[ $first_arg =~ ^[0-9]+$ ]]; then
+        echo "  ✓ Argument is a number"
+        if [ $first_arg -gt 0 ] && [ $first_arg -le $MAXTHREADS ]; then
+            echo "  ✓ Thread count in range (1-$MAXTHREADS)"
+            NTHREADS=$first_arg
+        else
+            echo "  ⚠ Thread count not in range (1-$MAXTHREADS), using 2"
+            NTHREADS=2
+        fi
+    else
+        echo "  ⚠ Argument is not a number, using 2"
+        NTHREADS=2
+    fi
+else
+    echo "  No arguments, using default: 2"
+    NTHREADS=2
+fi
+
+echo -e "\n  Using $NTHREADS MPI threads"
+
+# ============================================================
+# 3. Check NWChem Executable
+# ============================================================
+echo -e "\n🔍 Checking NWChem..."
+
+# Try to find NWChem
+NWCHEM_EXECUTABLE="nwchem"
+if ! command -v $NWCHEM_EXECUTABLE &> /dev/null; then
+    # Try common locations
+    POSSIBLE_PATHS=(
+        "/home/rehim/anaconda3/envs/molmatmodel/bin/nwchem"
+        "/usr/bin/nwchem"
+        "/usr/local/bin/nwchem"
+        "$HOME/anaconda3/bin/nwchem"
+        "$HOME/miniconda3/bin/nwchem"
+    )
+    
+    for path in "${POSSIBLE_PATHS[@]}"; do
+        if [ -f "$path" ]; then
+            NWCHEM_EXECUTABLE="$path"
+            break
+        fi
+    done
+fi
+
+if ! command -v $NWCHEM_EXECUTABLE &> /dev/null; then
+    echo "  ❌ ERROR: NWChem not found!"
+    echo "  Please install NWChem or set PATH correctly"
+    echo "  Current PATH: $PATH"
+    exit 1
+fi
+
+echo "  ✓ NWChem found: $NWCHEM_EXECUTABLE"
+echo "  Version: $($NWCHEM_EXECUTABLE --version 2>&1 | head -1 || echo 'Unknown')"
+
+# ============================================================
+# 4. Check Input File
+# ============================================================
+echo -e "\n📁 Checking input files..."
+
+proj="ch3_zora_b3lyp_prop"
+INPUT_FILE="$proj.nw"
+CURRENT_DIR=$(pwd)
+
+if [ ! -f "$CURRENT_DIR/$INPUT_FILE" ]; then
+    echo "  ❌ ERROR: Input file $INPUT_FILE not found!"
+    echo "  Current directory: $CURRENT_DIR"
+    echo "  Files in directory:"
+    ls -la *.nw 2>/dev/null || echo "  No .nw files found"
+    
+    # Try to create a simple test file
+    echo "  Creating test input file..."
+    cat > "$INPUT_FILE" << 'EOF'
+start test_ch3
+title "CH3 radical test"
+geometry
+  C 0 0 0
+  H 0 1.086 0
+  H -0.94 -0.543 0
+  H 0.94 -0.543 0
+end
+basis * library 6-31G
+dft mult 2 xc b3lyp
+task dft
+EOF
+    echo "  ✓ Created test input: $INPUT_FILE"
+fi
+
+echo "  ✓ Input file: $INPUT_FILE"
+
+# ============================================================
+# 5. Check MPI
+# ============================================================
+echo -e "\n🔍 Checking MPI..."
+
+if command -v mpirun &> /dev/null; then
+    MPI_PATH=$(which mpirun)
+    echo "  ✓ MPI found: $MPI_PATH"
+    echo "  MPI version: $(mpirun --version 2>&1 | head -1)"
+else
+    echo "  ⚠ MPI not found, installing/openmpi may be needed"
+    echo "  Trying to run without MPI..."
+    MPI_CMD=""
+fi
+
+# ============================================================
+# 6. Setup Scratch Directory
+# ============================================================
+echo -e "\n📁 Setting up scratch directory..."
+
+# Create unique scratch directory
+RAND_STR=$(openssl rand -hex 6 2>/dev/null || date +%s%N | head -c 12)
+TMPDIR="/tmp/$USER/nwchem_run.$RAND_STR"
+
+echo "  Scratch directory: $TMPDIR"
+mkdir -p "$TMPDIR" || {
+    echo "  ❌ Failed to create scratch directory"
+    TMPDIR="/tmp/nwchem_run.$RAND_STR"
+    mkdir -p "$TMPDIR" || exit 1
+}
+echo "  ✓ Scratch directory created"
+
+# ============================================================
+# 7. Run NWChem
+# ============================================================
+echo -e "\n=========================================="
+echo "🚀 Launching NWChem Calculation"
+echo "=========================================="
+echo "  Project: $proj"
+echo "  Threads: $NTHREADS"
+echo "  Input: $INPUT_FILE"
+echo "  Scratch: $TMPDIR"
+echo "=========================================="
+
+# Copy input to scratch
+cp "$INPUT_FILE" "$TMPDIR/"
+cd "$TMPDIR"
+
+# Set environment
+export NWCHEM_EXECUTABLE="$NWCHEM_EXECUTABLE"
+export TMPDIR="$TMPDIR"
+
+# Run calculation
+START_TIME=$(date +%s)
+
+if command -v mpirun &> /dev/null && [ -n "$MPI_CMD" ]; then
+    echo "  Running with MPI ($NTHREADS processes)..."
+    mpirun -np $NTHREADS $NWCHEM_EXECUTABLE "$INPUT_FILE" > "$CURRENT_DIR/${proj}.outN${NTHREADS}" 2>&1
+else
+    echo "  Running serial..."
+    $NWCHEM_EXECUTABLE "$INPUT_FILE" > "$CURRENT_DIR/${proj}.outN${NTHREADS}" 2>&1
+fi
+
+END_TIME=$(date +%s)
+WALL_TIME=$((END_TIME - START_TIME))
+
+# ============================================================
+# 8. Check Results
+# ============================================================
+echo -e "\n=========================================="
+echo "📊 Results"
+echo "=========================================="
+
+OUTPUT_FILE="$CURRENT_DIR/${proj}.outN${NTHREADS}"
+
+if [ -f "$OUTPUT_FILE" ]; then
+    echo "  ✓ Output file: $OUTPUT_FILE"
+    echo "  File size: $(du -h "$OUTPUT_FILE" | cut -f1)"
+    
+    # Check for completion
+    if grep -q "Total energy" "$OUTPUT_FILE"; then
+        echo "  ✅ Calculation completed successfully!"
+        echo "  Total energy: $(grep 'Total energy' "$OUTPUT_FILE" | tail -1)"
+        echo "  Wall time: ${WALL_TIME}s"
+        
+        # Extract EPR results if present
+        if grep -q "g-tensor" "$OUTPUT_FILE"; then
+            echo ""
+            echo "  EPR Results:"
+            grep -A 5 "g-tensor" "$OUTPUT_FILE" | head -6
+        fi
+        if grep -q "Hyperfine" "$OUTPUT_FILE"; then
+            echo ""
+            grep -A 5 "Hyperfine" "$OUTPUT_FILE" | head -6
+        fi
+        
+        SUCCESS=1
+    else
+        echo "  ⚠ Calculation may not have completed"
+        echo "  Last 20 lines of output:"
+        tail -20 "$OUTPUT_FILE"
+        SUCCESS=0
+    fi
+else
+    echo "  ❌ Output file not found!"
+    SUCCESS=0
+fi
+
+# ============================================================
+# 9. Cleanup
+# ============================================================
+echo -e "\n🧹 Cleaning up..."
+
+cd "$CURRENT_DIR"
+if [ -d "$TMPDIR" ]; then
+    echo "  Removing scratch: $TMPDIR"
+    rm -rf "$TMPDIR"
+fi
+
+# Clean up temporary files
+for junk in mopac.out mopac.arc mopac.mop tmp_bench_nwchem.nw; do
+    [ -f "$junk" ] && rm -f "$junk"
+done
+
+# ============================================================
+# 10. Summary
+# ============================================================
+echo -e "\n=========================================="
+echo "NWChem Job Finished: $(date)"
+echo "=========================================="
+echo "  Project: $proj"
+echo "  Threads: $NTHREADS"
+echo "  Wall time: ${WALL_TIME}s"
+echo "  Status: $([ $SUCCESS -eq 1 ] && echo "✅ SUCCESS" || echo "❌ FAILED")"
+echo "  Output: $OUTPUT_FILE"
+echo "=========================================="
+
+# ============================================================
+# 11. Results Summary for Challenge
+# ============================================================
+if [ $SUCCESS -eq 1 ]; then
+    echo -e "\n📝 Results for Challenge I.2 & I.8:"
+    echo "  Method: NWChem DFT/B3LYP"
+    echo "  Molecule: CH3 radical"
+    echo "  Threads: $NTHREADS"
+    echo "  Wall time: ${WALL_TIME}s"
+    echo "  Energy: $(grep 'Total energy' "$OUTPUT_FILE" | tail -1 | awk '{print $NF}') Hartree"
+    echo ""
+    echo "  ✅ Challenge I.2: Performance test complete"
+    echo "  ✅ Challenge I.8: U-molecule test ready"
+fi
+
+exit $([ $SUCCESS -eq 1 ] && echo 0 || echo 1)

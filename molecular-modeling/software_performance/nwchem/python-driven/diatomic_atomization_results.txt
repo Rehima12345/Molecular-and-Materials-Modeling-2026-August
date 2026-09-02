@@ -1,0 +1,22 @@
+======================================================================
+DIATOMIC ATOMIZATION ENERGY RESULTS
+======================================================================
+
+
+H2:
+  EMT Bond Length:    0.7791 Å
+  EMT Atomization:    5.3495 eV
+  Exp. Bond Length:   0.7410 Å
+  Exp. Atomization:   4.52 eV
+
+N2:
+  EMT Bond Length:    0.9981 Å
+  EMT Atomization:    9.9372 eV
+  Exp. Bond Length:   1.0980 Å
+  Exp. Atomization:   9.76 eV
+
+O2:
+  EMT Bond Length:    1.1005 Å
+  EMT Atomization:    8.5752 eV
+  Exp. Bond Length:   1.2080 Å
+  Exp. Atomization:   5.12 eV

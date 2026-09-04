@@ -1,0 +1,9 @@
+=====================================================================================
+CHALLENGE: PSEUDOPOTENTIAL CONVERGENCE COMPARISON FOR Si
+=====================================================================================
+Pseudopotential                               Functional   Type       Converged ecutwfc (Ry)
+-------------------------------------------------------------------------------------
+Si.pbe-n-kjpaw_psl.1.0.0.UPF                  PBE          PAW        40                  
+Si.pbesol-n-kjpaw_psl.1.0.0.UPF               PBESOL       PAW        40                  
+Si.pz-n-rrkjus_psl.0.1.UPF                    LDA          USPP       40                  
+=====================================================================================

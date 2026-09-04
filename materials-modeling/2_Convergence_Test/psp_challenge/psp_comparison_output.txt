@@ -1,0 +1,55 @@
+=====================================================================================
+CHALLENGE: PSEUDOPOTENTIAL CONVERGENCE COMPARISON FOR Si
+=====================================================================================
+
+-------------------------------------------------------------------------------------
+Pseudopotential                               Functional   Type       Converged ecutwfc (Ry)
+-------------------------------------------------------------------------------------
+
+Testing: Si.pbe-n-kjpaw_psl.1.0.0.UPF
+  Functional: PBE, Type: PAW
+  --------------------------------------------------
+    ecutwfc = 20 Ry: -1271.464920 eV
+    ecutwfc = 30 Ry: -1271.489352 eV (ΔE = 12.216 meV/atom)  
+    ecutwfc = 40 Ry: -1271.491007 eV (ΔE = 0.828 meV/atom) ✓
+    ecutwfc = 50 Ry: -1271.492253 eV (ΔE = 0.623 meV/atom) ✓
+    ecutwfc = 60 Ry: -1271.492517 eV (ΔE = 0.132 meV/atom) ✓
+    ecutwfc = 70 Ry: -1271.492672 eV (ΔE = 0.078 meV/atom) ✓
+    ecutwfc = 80 Ry: -1271.492795 eV (ΔE = 0.061 meV/atom) ✓
+  >>> Converged ecutwfc: 40 Ry
+
+Testing: Si.pbesol-n-kjpaw_psl.1.0.0.UPF
+  Functional: PBESOL, Type: PAW
+  --------------------------------------------------
+    ecutwfc = 20 Ry: -1241.857133 eV
+    ecutwfc = 30 Ry: -1241.882102 eV (ΔE = 12.485 meV/atom)  
+    ecutwfc = 40 Ry: -1241.883686 eV (ΔE = 0.792 meV/atom) ✓
+    ecutwfc = 50 Ry: -1241.884918 eV (ΔE = 0.616 meV/atom) ✓
+    ecutwfc = 60 Ry: -1241.885174 eV (ΔE = 0.128 meV/atom) ✓
+    ecutwfc = 70 Ry: -1241.885333 eV (ΔE = 0.079 meV/atom) ✓
+    ecutwfc = 80 Ry: -1241.885462 eV (ΔE = 0.064 meV/atom) ✓
+  >>> Converged ecutwfc: 40 Ry
+
+Testing: Si.pz-n-rrkjus_psl.0.1.UPF
+  Functional: LDA, Type: USPP
+  --------------------------------------------------
+    ecutwfc = 20 Ry: -309.743537 eV
+    ecutwfc = 30 Ry: -309.763826 eV (ΔE = 10.145 meV/atom)  
+    ecutwfc = 40 Ry: -309.765792 eV (ΔE = 0.983 meV/atom) ✓
+    ecutwfc = 50 Ry: -309.765995 eV (ΔE = 0.101 meV/atom) ✓
+    ecutwfc = 60 Ry: -309.766258 eV (ΔE = 0.132 meV/atom) ✓
+    ecutwfc = 70 Ry: -309.766336 eV (ΔE = 0.039 meV/atom) ✓
+    ecutwfc = 80 Ry: -309.766375 eV (ΔE = 0.019 meV/atom) ✓
+  >>> Converged ecutwfc: 40 Ry
+
+=====================================================================================
+SUMMARY TABLE
+=====================================================================================
+Pseudopotential                               Functional   Type       Converged ecutwfc (Ry)
+-------------------------------------------------------------------------------------
+Si.pbe-n-kjpaw_psl.1.0.0.UPF                  PBE          PAW        40                  
+Si.pbesol-n-kjpaw_psl.1.0.0.UPF               PBESOL       PAW        40                  
+Si.pz-n-rrkjus_psl.0.1.UPF                    LDA          USPP       40                  
+=====================================================================================
+
+✓ Results saved to: psp_comparison_table.txt
